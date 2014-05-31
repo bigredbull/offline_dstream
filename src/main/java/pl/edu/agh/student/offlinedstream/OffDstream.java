@@ -29,7 +29,7 @@ public class OffDstream {
 
         // Setup MapReduce
         job.setMapperClass(OffDstreamMapper.class);
-        job.setReducerClass(OffDstreamReducer.class);
+        job.setReducerClass(GridReducer.class);
         job.setNumReduceTasks(1);
 
         // Specify key / value
