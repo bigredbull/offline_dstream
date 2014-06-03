@@ -1,6 +1,7 @@
 package pl.edu.agh.student.offlinedstream;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 
 import org.apache.hadoop.io.IntWritable;
@@ -8,7 +9,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 import sun.tools.tree.NewInstanceExpression;
 
-public class GridReducer extends Reducer<Coordinates, Grid, IntWritable, Text> {
+public class GridReducer extends Reducer<Coordinates, Grid, Text, Text> {
 
     public static final double LAMBDA = 0.8;
 
@@ -34,7 +35,6 @@ public class GridReducer extends Reducer<Coordinates, Grid, IntWritable, Text> {
             }
             mergedGrid.density += g.density;
         }
-//        context.write(coords, mergedGrid);
-        context.write(new IntWritable(1), new Text("hello!"));
+        context.write(new Text(Coordinates.toString(coords)), new Text(Grid.toString(mergedGrid)));
     }
 }

@@ -44,4 +44,22 @@ public class Coordinates implements WritableComparable<Coordinates>, Serializabl
         }
         return 0;
     }
+
+    public static String toString(Coordinates g) {
+        StringBuilder sb = new StringBuilder(Integer.toString(g.coords.size()));
+        for(Integer i : g.coords) {
+            sb.append(" ").append(i.intValue());
+        }
+        return sb.toString();
+    }
+
+    public static Coordinates fromString(String s) {
+        String[] splitted = s.split(" ");
+        ArrayList<Integer> list = new ArrayList<>();
+        for(String fragment : splitted) {
+            list.add(Integer.parseInt(fragment));
+        }
+        return new Coordinates(list);
+    }
+
 }
