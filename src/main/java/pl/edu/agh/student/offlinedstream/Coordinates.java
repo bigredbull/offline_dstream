@@ -7,12 +7,15 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-public class Coordinates implements WritableComparable<Coordinates>, Serializable {
-    public List<Integer> coords = new ArrayList<>();
+public class Coordinates implements WritableComparable<Coordinates>, Iterable<Integer>, Serializable {
 
-    public Coordinates() {}
+    private List<Integer> coords = new ArrayList<>();
+
+    public Coordinates() {
+    }
 
     public Coordinates(List<Integer> coords) {
         this.coords = coords;
@@ -21,45 +24,82 @@ public class Coordinates implements WritableComparable<Coordinates>, Serializabl
     @Override
     public void write(DataOutput dataOutput) throws IOException {
         dataOutput.writeInt(coords.size());
-        for(Integer i: coords) {
-            dataOutput.writeInt(i);
+        for (Integer coord : coords) {
+            dataOutput.writeInt(coord);
         }
     }
 
     @Override
     public void readFields(DataInput dataInput) throws IOException {
-        int length = dataInput.readInt();
-        for(int i = 0; i < length; ++i) {
+        coords = new ArrayList<>();
+
+        int size = dataInput.readInt();
+        for (int i = 0; i < size; i++) {
             coords.add(dataInput.readInt());
         }
     }
 
     @Override
+    public Iterator<Integer> iterator() {
+        return coords.iterator();
+    }
+
+    @Override
     public int compareTo(Coordinates otherCoords) {
-        for(int i = 0; i < coords.size(); ++i) {
-            int cmp = coords.get(i).compareTo(otherCoords.coords.get(i));
-            if (cmp != 0) {
-                return cmp;
+        Iterator<Integer> it = iterator();
+        Iterator<Integer> otherIt = otherCoords.iterator();
+
+        while (it.hasNext() && otherIt.hasNext()) {
+            Integer coord = it.next();
+            Integer otherCoord = otherIt.next();
+
+            int comp = coord.compareTo(otherCoord);
+            if (comp != 0) {
+                return comp;
             }
         }
+
         return 0;
     }
 
-    public static String toString(Coordinates g) {
-        StringBuilder sb = new StringBuilder(Integer.toString(g.coords.size()));
-        for(Integer i : g.coords) {
-            sb.append(" ").append(i.intValue());
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
         }
-        return sb.toString();
+
+        if (!(obj instanceof Coordinates)) {
+            return false;
+        }
+
+        Coordinates other = (Coordinates) obj;
+        return other.coords.equals(coords);
     }
 
-    public static Coordinates fromString(String s) {
-        String[] splitted = s.split(" ");
-        ArrayList<Integer> list = new ArrayList<>();
-        for(String fragment : splitted) {
-            list.add(Integer.parseInt(fragment));
+    @Override
+    public int hashCode() {
+        return coords.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        Iterator<Integer> it = coords.iterator();
+
+        sb.append('(');
+
+        if (it.hasNext()) {
+            sb.append(it.next());
         }
-        return new Coordinates(list);
+
+        while (it.hasNext()) {
+            sb.append(',');
+            sb.append(it.next());
+        }
+
+        sb.append(')');
+
+        return sb.toString();
     }
 
 }
